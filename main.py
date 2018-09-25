@@ -1,47 +1,88 @@
 from flask import Flask, request, render_template, redirect
 import cgi
+import os
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
 
-# @app.route('/')
-# def index():
-#     return 'Hello'
 
-@app.route('/signup',methods=['POST', 'GET'])
-def signup():
-    error = ''
+form = """
+<style>
+    .error{{ color:red; }}
+</style>
+<form method="POST">
+    <h1>User Signup</h1>
+    <label for="name">Username
+        <input type="text" name="name" id="name" value="{username}">
+    </label>
+    <p class="error">{username_error}</p>
+    <label for="pwd">Password
+        <input type="password" name="pwd" id="pwd" value="{pwd}">
+    </label>
+    <p class="error">{password_error}</p>
+    <label for="confirm_pwd">Confirm Password
+    <input type="password" name="confirm" id="confirm" value="{confirm}">
+    </label>
+    <p class="error">{confirm_error}</p>
+    <label for="email">Email (optional)
+        <input type="email" name="email" id="email" value="{email}">
+    </label>
+    <p class="error">{email_error}</p>
+    <input type="submit" value="Submit">
+</form>
+"""
 
-    if request.method == 'POST':
-        name = request.form.get('name')
-        pwd = request.form.get('pwd')
-        confirm_pwd = request.form.get('confirm_pwd')
-        email = request.form.get('email')
+@app.route('/')
+def display_form():
+    
+    return form.format(username='',pwd='',confirm='',email='',username_error='',password_error='',confirm_error='',email_error='')
 
-        if (name == '') or (pwd == '') or (email == ''):
-            error = 'Please fill out each field'
-            return redirect('/?signup' + error)
+@app.route('/', methods=['POST'])
+def validate_input():
 
-        if (len(name) < 3 or len(name) > 20) or (pwd < 3 or pwd > 20):
-            error = 'Username or password is invalid, must be between (3 - 20) characters'
-            return redirect("/?signup" + error)
+    username = request.form['name']
+    password = request.form['pwd']
+    confirm = request.form['confirm']
+    email = request.form['email']
+    username_error = ''
+    password_error = ''
+    confirm_error=''
+    email_error = ''
+
+    if username == '':
+        username_error = 'Username cannot be empty'
+    elif len(username) > 20 or len(username) < 3:
+        username_error = 'Username must be between 3 - 20 characters'
+        username = ''
+    elif ' ' in username:
+        username_error = 'Spaces are not allowed in username'
+        username = ''
+    
+    if password == '':
+        password_error = 'Password cannot be empty'
+    elif len(password) > 20 or len(password) < 3:
+        password_error = 'Password must be between 3 - 20 characters'
+        password = ''
+    elif ' ' in password:
+        password_error = 'Spaces are not allowed in password'
+        password = ''
+    
+    if not confirm == password:
+        confirm_error = 'Passwords does not match'
+        confirm = ''
+
+    if email == '':
+        email_error = ''
+    else:
+        if ("@" not in email) or ("." not in email) or (len(email) < 3) or (len(email) > 20):
+            email_error = 'Email address is invalid'
+            email = ''
+
+    if not username_error and not password_error and not confirm_error and not email_error:
+        return 'Success'
         
-        if (' ' in name) or (' ' in pwd):
-            error = 'Password or password is invalid, neither cannot contain a space character'
-            return redirect("/?signup" + error)
-
-        if (confirm_pwd == pwd):
-            error = 'Passwords does not match'
-            return redirect("/?signup" + error)
-
-        if email == '':
-            error = ''
-        elif (email != '') and ("@" not in email) and ("." not in email) and (email < 3 and email > 20):
-            error = "Email address is invalid"
-            return redirect('/?signup' + error)
-
-    return render_template('/signup.html',error=error)
-
+    else:
+        return form.format(username_error=username_error,password_error=password_error,confirm_error=confirm_error,email_error=email_error,username=username,email=email,pwd=password,confirm=confirm)
 
 
 app.run()
