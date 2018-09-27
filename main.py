@@ -58,7 +58,7 @@ def validate_input():
         username_error = 'Username cannot be empty'
     elif len(username) > 20 or len(username) < 3:
         username_error = 'Username must be between 3 - 20 characters'
-        # username = ''
+        username = ''
     elif ' ' in username:
         username_error = 'Spaces are not allowed in username'
         username = ''
@@ -67,22 +67,22 @@ def validate_input():
         password_error = 'Password cannot be empty'
     elif len(password) > 20 or len(password) < 3:
         password_error = 'Password must be between 3 - 20 characters'
-        # password = ''
+        password = ''
     elif ' ' in password:
         password_error = 'Spaces are not allowed in password'
-        # password = ''
+        password = ''
     
     if confirm == '':
         confirm_error = 'Confirm password cannot be empty'
     elif not confirm == password:
         confirm_error = 'Passwords does not match'
-        # confirm = ''
+        confirm = ''
 
     if email == '':
         email_error = ''
     elif not match or (len(email) < 3) or (len(email) > 20):
         email_error = 'Email address is invalid'
-        # email = ''
+        email = ''
 
     if not username_error and not password_error and not confirm_error and not email_error:
         return 'Welcome ' + username + '!'
