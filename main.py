@@ -7,39 +7,10 @@ import re
 app = Flask(__name__)
 app.config['DEBUG'] = True
 
-
-form = """
-<style>
-    .error{{ color:red; }}
-</style>
-<form method="POST">
-    <h1>User Signup</h1>
-    <label for="name">Username
-        <input type="text" name="name" id="name" value="{username}">
-    </label>
-    <p class="error">{username_error}</p>
-    <label for="pwd">Password
-        <input type="password" name="pwd" id="pwd" value="{pwd}">
-    </label>
-    <p class="error">{password_error}</p>
-    <label for="confirm_pwd">Confirm Password
-    <input type="password" name="confirm" id="confirm" value="{confirm}">
-    </label>
-    <p class="error">{confirm_error}</p>
-    <label for="email">Email (optional)
-        <input type="email" name="email" id="email" value="{email}">
-    </label>
-    <p class="error">{email_error}</p>
-    <input type="submit" value="Submit">
-</form>
-"""
-
 @app.route('/')
 def display_form():
     
-    return form.format(username='',pwd='',confirm='',email='',username_error='',password_error='',confirm_error='',email_error='')
-
-
+    return render_template('signup.html',username='',pwd='',confirm='',email='',username_error='',password_error='',confirm_error='',email_error='')
 
 @app.route('/', methods=['POST'])
 def validate_input():
@@ -88,7 +59,7 @@ def validate_input():
         return 'Welcome ' + username + '!'
         
     else:
-        return form.format(username_error=username_error,password_error=password_error,confirm_error=confirm_error,email_error=email_error,username=username,email=email,pwd=password,confirm=confirm)
+        return render_template('signup.html',username_error=username_error,password_error=password_error,confirm_error=confirm_error,email_error=email_error,username=username,email=email,pwd=password,confirm=confirm)
 
 
 app.run()
